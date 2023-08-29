@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli</title>
+</head>
+<body>
+    <h1>Admin Paneli</h1>
+    <table id="randevularTable">
+      <thead>
+        <tr>
+          <th>İsim</th>
+          <th>Hizmet</th>
+          <th>Personel</th>
+          <th>Tarih</th>
+          <th>Saat</th>
+          <th>Telefon Numarası</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script>
+        const randevularTable = document.querySelector('#randevularTable');
+  
+        async function getRandevular() {
+          const token = localStorage.getItem('token');
+          const response = await fetch('/api/randevu/list', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await response.json();
+          return data.data;
+        }
+  
+        async function updateRandevularTable() {
+          const randevular = await getRandevular();
+          const tbody = randevularTable.querySelector('tbody');
+          tbody.innerHTML = '';
+          for (const randevu of randevular) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${randevu.name}</td>
+              <td>${randevu.service}</td>
+              <td>${randevu.personnel}</td>
+              <td>${new Date(randevu.date).toLocaleDateString()}</td>
+              <td>${randevu.time}</td>
+              <td>${randevu.phoneNumber}</td>`;
+            tbody.appendChild(tr);
+          }
+        }
+  
+        updateRandevularTable();
+      </script>
+</body>
+</html>

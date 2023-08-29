@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Admin Girişi</h1>
+    <form id="loginForm" action="/login" method="post">
+      <label for="username">Kullanıcı Adı:</label><br />
+      <input type="text" id="username" name="username" /><br />
+      <label for="password">Şifre:</label><br />
+      <input type="password" id="password" name="password" /><br /><br />
+      <input type="submit" value="Giriş Yap" />
+    </form>
+    <script>
+        const loginForm = document.querySelector('#loginForm');
+  
+        loginForm.addEventListener('submit', async event => {
+          event.preventDefault();
+          const formData = new FormData(loginForm);
+          const data = Object.fromEntries(formData.entries());
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          if (response.ok) {
+            const { token } = await response.json();
+            localStorage.setItem('token', token);
+            window.location.href = '/admin-panel.html';
+          } else {
+            const error = await response.text();
+            alert(error);
+          }
+        });
+      </script>
+</body>
+</html>

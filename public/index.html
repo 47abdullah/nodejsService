@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  <h1>Randevu Alma</h1>
+    <form id="randevuForm" action="/api/randevu" method="post">
+      <label for="name">İsim:</label><br />
+      <input type="text" id="name" name="name" /><br />
+      <label for="service">Hizmet:</label><br />
+      <input type="text" id="service" name="service" /><br />
+      <label for="personnel">Personel:</label><br />
+      <select id="personnel" name="personnel">
+        <option value="ismail">ismail</option>
+        <option value="berber ali">berber ali </option>
+        <option value="ahmet bingül">ahmet bingül</option>
+      </select><br />
+      <label for="date">Tarih:</label><br />
+      <input type="date" id="date" name="date" /><br />
+      <label for="time">Saat:</label><br />
+      <select id="time" name="time"></select><br />
+      <label for="phoneNumber">Telefon Numarası:</label><br />
+      <input type="text" id="phoneNumber" name="phoneNumber" /><br /><br />
+      <input type="submit" value="Randevu Al" />
+    </form>
+
+
+    <script>
+      const randevuForm = document.querySelector('#randevuForm');
+      const personnelInput = document.querySelector('#personnel');
+      const dateInput = document.querySelector('#date');
+      const timeSelect = document.querySelector('#time');
+
+      async function getMusaitSaatler(personnel, date) {
+        const response = await fetch(`/api/saat?personnel=${personnel}&date=${date}`);
+        const musaitSaatler = await response.json();
+        return musaitSaatler;
+      }
+
+      async function updateTimeSelect() {
+        const personnel = personnelInput.value;
+        const date = dateInput.value;
+        if (!personnel || !date) return;
+
+        const musaitSaatler = await getMusaitSaatler(personnel, date);
+        timeSelect.innerHTML = '';
+        for (const saat of musaitSaatler) {
+          const option = document.createElement('option');
+          option.value = saat;
+          option.textContent = saat;
+          timeSelect.appendChild(option);
+        }
+      }
+
+      personnelInput.addEventListener('change', updateTimeSelect);
+      dateInput.addEventListener('change', updateTimeSelect);
+
+      randevuForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        const formData = new FormData(randevuForm);
+        const data = Object.fromEntries(formData.entries());
+        const response = await fetch('/api/randevu', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          alert('Randevunuz başarıyla oluşturuldu');
+        } else {
+          const error = await response.text();
+          alert(error);
+        }
+      });
+    </script>
+</body>
+</html>

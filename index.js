@@ -6,6 +6,7 @@ const port=4000;
 
 
 app.use(express.json());
+app.use(express.static('public'))
 
 app.use('/api',randevuRoutes);
 

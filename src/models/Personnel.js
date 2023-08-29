@@ -40,3 +40,20 @@
   
 // //   await personnel.save();
   
+
+
+
+
+
+
+
+
+const mongoose = require('mongoose');
+
+const personelSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  role: String
+});
+
+module.exports = mongoose.model('Personel', personelSchema);
